@@ -22,8 +22,6 @@ legend("topright", inset=c(-0.47,0), legend = c("Clade-A Ants", "Clade-B Ants", 
 mtext("Stress = 0.0704", side = 3.5)
 
 
-
-
 #Indicator Species Analysis (ISA) - T. arizonensis Example
 library(indicspecies)
 #T. arizonensis Fungus Data Import
@@ -33,8 +31,7 @@ meta = read.csv("Rarified Ta Fungus Metadata.csv", header= TRUE)
 type = meta$color                                                    
 inv = multipatt(abund, type, func = "r.g", control = how(nperm=9999))          
 summary(inv)
-
-#T. arizonensis Ants  Data Import
+#T. arizonensis Ant Data Import
 abund = read.csv("Rarified Ta OTU Table Ants.csv", header= TRUE)                           
 meta = read.csv("Rarified Ta Metadata Ants.csv", header= TRUE)
 #Fungal Clade Grown Based ISA
@@ -43,332 +40,45 @@ inv = multipatt(abund, type, func = "r.g", control = how(nperm=9999))
 summary(inv)
 
 
-#Fungus A-B Ta OTU PERMANOVA 
+#Permutational Multivariate ANOVA (PERMANOVA) - T. arizonensis Example
+library(vegan)
 Ants = read.csv("Rarified Ta Fungus OTU Table.csv", header= TRUE)
 AntsENV = read.csv("Rarified Ta Fungus Metadata.csv", header= TRUE)
 perm = adonis2(Ants~color, AntsENV, permutations = 9999, method = "bray", by= "margin")
 perm
 # F=3.629, R2=0.34142, df=1,8 p=0.1066
-
-
-
-
-
-#Rarify Table - Tp 380
-Metadata_Ti = read.csv("Tp Metadata.csv", header = TRUE)
-Ants = read.csv("Tp OTU Table.csv", header = TRUE)
-attach(Metadata_Ti)
-otu.Tab  <- Rarefy(Ants, depth = 380)$otu.tab.rff
-write.csv(otu.Tab,"Rarified Tp OTU Table 380.csv")
-
-#Rarify Table - Tp 700
-Metadata_Ti = read.csv("Tp Metadata.csv", header = TRUE)
-Ants = read.csv("Tp OTU Table.csv", header = TRUE)
-attach(Metadata_Ti)
-otu.Tab  <- Rarefy(Ants, depth = 700)$otu.tab.rff
-write.csv(otu.Tab,"Rarified Tp OTU Table 700.csv")
-
-#NMDS Plot - Bacteria OTU - Tp 700
-all_OTU = read.csv("Rarified Tp OTU Table 700.csv", header= TRUE)
-abund = all_OTU[,2:ncol(all_OTU)] 
-ord <- metaMDS(abund, try=1000)
-metadata = read.csv("Rarified Tp Metadata 700.csv", header= TRUE)
-attach(metadata)
-plot(ord)
-plot(ord, disp = "sites", type = "n", main = substitute(paste(italic('T. pomonae'))))
-points(ord,display="sites", col = color,bg = color, pch=shape ,cex=1.25)
-par(mar=c(5, 4, 4, 9), xpd=TRUE)
-legend("topright", inset=c(-0.47,0), legend = c("Donor Ants", "Switch A Ants", "Switch B Ants", "Donor A Fungus", "Switch A Fungus", "Donor B Fungus", "Switch B Fungus"), col = c("azure3", "darkorange","cyan","red3","red3", "blue", "blue"), pt.bg = c("azure3", "darkorange","cyan","red3","red3", "blue", "blue"), pch = c(21,24,24,21,24,21,24))
-mtext("Stress = 0.1390", side = 3.5)
-#Stress = 0.1390
-
-#NMDS Plot - Bacteria OTU - Tp 700 Ants ONLY
-all_OTU = read.csv("Rarified Tp OTU Table 700 Ant.csv", header= TRUE)
-abund = all_OTU[,2:ncol(all_OTU)] 
-ord <- metaMDS(abund, try=1000)
-metadata = read.csv("Rarified Tp Metadata 700 Ant.csv", header= TRUE)
-attach(metadata)
-plot(ord)
-plot(ord, disp = "sites", type = "n", main = substitute(paste(italic('T. pomonae'), " Ants")))
-points(ord,display="sites", col = color,bg = color, pch=shape ,cex=1.25)
-par(mar=c(5, 4, 4, 9), xpd=TRUE)
-legend("topright", inset=c(-0.47,0), legend = c("Source Ants", "Switch A Ants", "Switch B Ants"), col = c("azure3", "darkorange","cyan"), pt.bg = c("azure3", "darkorange","cyan"), pch = c(21,24,24))
-mtext("Stress = 0.1330", side = 3.5)
-#Stress = 0.1330
-
-#NMDS Plot - Bacteria OTU - Tp 700 Fungus ONLY
-all_OTU = read.csv("Rarified Tp OTU Table 700 Fungus.csv", header= TRUE)
-abund = all_OTU[,2:ncol(all_OTU)] 
-ord <- metaMDS(abund, try=1000)
-metadata = read.csv("Rarified Tp Metadata 700 Fungus.csv", header= TRUE)
-attach(metadata)
-plot(ord)
-plot(ord, disp = "sites", type = "n", main = substitute(paste(italic('T. pomonae'), " Fungus")))
-points(ord,display="sites", col = color,bg = color, pch=shape ,cex=1.25)
-par(mar=c(5, 4, 4, 9), xpd=TRUE)
-legend("topright", inset=c(-0.47,0), legend = c("Donor A Fungus", "Switch A Fungus", "Donor B Fungus", "Switch B Fungus"), col = c("red3","red3", "blue", "blue"), pt.bg = c("red3","red3", "blue", "blue"), pch = c(21,24,21,24))
-mtext("Stress = 7.32e-5", side = 3.5)
-#Stress = 7.32e-5
-
-#NMDS Plot - Bacteria OTU - Tp Fungus 700 ONLY - NO B DONOR
-all_OTU = read.csv("Rarified Tp OTU Table 700 Fungus No B Donor.csv", header= TRUE)
-abund = all_OTU[,2:ncol(all_OTU)] 
-ord <- metaMDS(abund, try=1000)
-metadata = read.csv("Rarified Tp Metadata 700 Fungus No B Donor.csv", header= TRUE)
-attach(metadata)
-plot(ord)
-plot(ord, disp = "sites", type = "n", main = substitute(paste(italic('T. pomonae'), " Fungus without Donor B Fungus")))
-points(ord,display="sites", col = color,bg = color, pch=shape ,cex=1.25)
-par(mar=c(5, 4, 4, 9), xpd=TRUE)
-legend("topright", inset=c(-0.47,0), legend = c("Donor A Fungus", "Switch A Fungus", "Switch B Fungus"), col = c("red3","red3", "blue"), pt.bg = c("red3","red3", "blue"), pch = c(21,24,24))
-mtext("Stress = 0.153", side = 3.5)
-#Stress = 0.153
-
-#NMDS Plot - Bacteria OTU - Tp - 380
-all_OTU = read.csv("Rarified Tp OTU Table 380.csv", header= TRUE)
-abund = all_OTU[,2:ncol(all_OTU)] 
-ord <- metaMDS(abund, try=1000)
-metadata = read.csv("Rarified Tp Metadata 380.csv", header= TRUE)
-attach(metadata)
-plot(ord)
-plot(ord, disp = "sites", type = "n", main = substitute(paste(italic('T. pomonae'))))
-points(ord,display="sites", col = color,bg = color, pch=shape ,cex=1.25)
-par(mar=c(5, 4, 4, 9), xpd=TRUE)
-legend("topright", inset=c(-0.47,0), legend = c("Donor Ants", "Switch A Ants", "Switch B Ants", "Donor A Fungus", "Switch A Fungus", "Donor B Fungus", "Switch B Fungus"), col = c("azure3", "darkorange","cyan","red3","red3", "blue", "blue"), pt.bg = c("azure3", "darkorange","cyan","red3","red3", "blue", "blue"), pch = c(21,24,24,21,24,21,24))
-mtext("Stress = 0.142", side = 3.5)
-#Stress = 0.142
-
-#NMDS Plot - Bacteria OTU - Tp - 380 Ants
-all_OTU = read.csv("Rarified Tp OTU Table 380 Ants.csv", header= TRUE)
-abund = all_OTU
-ord <- metaMDS(abund, try=1000)
-metadata = read.csv("Rarified Tp Metadata 380 Ants.csv", header= TRUE)
-attach(metadata)
-plot(ord)
-plot(ord, disp = "sites", type = "n", main = substitute(paste(italic('T. pomonae'))))
-points(ord,display="sites", col = color,bg = color, pch=shape ,cex=1.25)
-par(mar=c(5, 4, 4, 9), xpd=TRUE)
-legend("topright", inset=c(-0.47,0), legend = c("Source Ants", "Switch A Ants", "Switch B Ants"), col = c("azure3", "darkorange","cyan"), pt.bg = c("azure3", "darkorange","cyan"), pch = c(21,24,24))
-mtext("Stress = 0.125", side = 3.5)
-#Stress = 0.125
-
-#NMDS Plot - Bacteria OTU - Tp - 380
-all_OTU = read.csv("Rarified Tp OTU Table 380 Fungus.csv", header= TRUE)
-abund = all_OTU
-ord <- metaMDS(abund, try=1000)
-metadata = read.csv("Rarified Tp Metadata 380 Fungus.csv", header= TRUE)
-attach(metadata)
-plot(ord)
-plot(ord, disp = "sites", type = "n", main = substitute(paste(italic('T. pomonae'))))
-points(ord,display="sites", col = color,bg = color, pch=shape ,cex=1.25)
-par(mar=c(5, 4, 4, 9), xpd=TRUE)
-legend("topright", inset=c(-0.47,0), legend = c("Source A Fungus", "Switch A Fungus", "Source B Fungus", "Switch B Fungus"), col = c("red3","red3", "blue", "blue"), pt.bg = c("red3","red3", "blue", "blue"), pch = c(21,24,21,24))
-mtext("Stress = 0.156", side = 3.5)
-#Stress = 0.156
-
-#Tp Fungus ISA
-abund = read.csv("Rarified Tp OTU Table 380 Fungus.csv", header= TRUE)                           
-Fungus = read.csv("Rarified Tp Metadata 380 Fungus.csv", header= TRUE)
-#Clade
-type = Fungus$color                                                    
-inv = multipatt(abund, type, func = "r.g", control = how(nperm=9999))          
-summary(inv)
-#Donor or Switch
-type = Fungus$shape                                                    
-inv = multipatt(abund, type, func = "r.g", control = how(nperm=9999))          
-summary(inv)
-#Clade and D/S
-type = Fungus$type                                                    
-inv = multipatt(abund, type, func = "r.g", control = how(nperm=9999))          
-summary(inv)
-#Tp Fungus ISA
-abund = read.csv("Rarified Tp OTU Table 380 Fungus - S A B.csv", header= TRUE)                           
-Fungus = read.csv("Rarified Tp Metadata 380 Fungus - S A B.csv", header= TRUE)
-type = Fungus$type                                                    
-inv = multipatt(abund, type, func = "r.g", control = how(nperm=9999))          
-summary(inv)
-
-#Tp Ants ISA
-abund = read.csv("Rarified Tp OTU Table 380 Ants.csv", header= TRUE)                           
-Fungus = read.csv("Rarified Tp Metadata 380 Ants.csv", header= TRUE)
-#Each Grouping
-type = Fungus$color                                                    
-inv = multipatt(abund, type, func = "r.g", control = how(nperm=9999))          
-summary(inv)
-#Donor or Switch
-type = Fungus$shape                                                    
-inv = multipatt(abund, type, func = "r.g", control = how(nperm=9999))          
-summary(inv)
-#Clade
-type = Fungus$clade                                                    
-inv = multipatt(abund, type, func = "r.g", control = how(nperm=9999))          
-summary(inv)
-
-#Ants Tp PERMANOVA
-all_OTU = read.csv("Rarified Tp OTU Table 380 Ants.csv", header= TRUE)
-metadata = read.csv("Rarified Tp Metadata 380 Ants.csv", header= TRUE)
-perm = adonis2(all_OTU~color, metadata, permutations = 9999, method = "bray", by= "margin")
-perm
-# F=1.6669, R2 = 0.1099, df=2,27, p=0.0264
-
-tommy = pairwise.adonis2(all_OTU ~ color, data = metadata)
+library(pairwaiseAdonis)
+tommy = pairwise.adonis2(Ants ~ color, data = AntsENV)
 tommy
 corrected_pvalues = p.adjust(p = c(0.04,0.024,0.235), method="bonferroni", n = 3)
 corrected_pvalues
 
-#Fungus Tp PERMANOVA
-all_OTU = read.csv("Rarified Tp OTU Table 380 Fungus.csv", header= TRUE)
-metadata = read.csv("Rarified Tp Metadata 380 Fungus.csv", header= TRUE)
-perm = adonis2(all_OTU~type, metadata, permutations = 9999, method = "bray", by= "margin")
-perm
-# F=3.0002, R2 = 0.29034, df=3,22, p=1e-04
 
-
-tommy = pairwise.adonis2(all_OTU ~ type, data = metadata)
-tommy
-corrected_pvalues = p.adjust(p = c(0.031, 0.008,0.002, 0.011, 0.009, 0.368), method="bonferroni", n = 6)
-corrected_pvalues
-
-#SIMPER SA - A
-Ants = read.csv("Rarified Tp OTU Table 380 Fungus - S A.csv", header= TRUE)
-AntsENV = read.csv("Rarified Tp Metadata 380 Fungus - S A.csv", header= TRUE)
+#Similarity Percentage (SIMPER) - T. pomonae Example
+#Import rarified datasets with only two groupings (in this case the source ants (S) and dysbiotic, Clade-A ants (A))
+Ants = read.csv("Rarified Tp OTU Table Fungus - S A.csv", header= TRUE)
+AntsENV = read.csv("Rarified Tp Metadata Fungus - S A.csv", header= TRUE)
 simp = simper(Ants, AntsENV$type,permutations = 9999, trace = FALSE)
 summary(simp)
 capture.output(summary(simp), file = "SIMPER Tp Fungus SA - A.csv")
 
-#SIMPER SB - A
-Ants = read.csv("Rarified Tp OTU Table 380 Fungus - S B.csv", header= TRUE)
-AntsENV = read.csv("Rarified Tp Metadata 380 Fungus - S B.csv", header= TRUE)
-simp = simper(Ants, AntsENV$type,permutations = 9999, trace = FALSE)
-summary(simp)
-capture.output(summary(simp), file = "SIMPER Tp Fungus SB - B.csv")
 
-#SIMPER S - A Ants
-Ants = read.csv("Rarified Tp OTU Table 380 Ants S - A.csv", header= TRUE)
-AntsENV = read.csv("Rarified Tp Metadata 380 Ants S - A.csv", header= TRUE)
-simp = simper(Ants, AntsENV$color,permutations = 9999, trace = FALSE)
-summary(simp)
-capture.output(summary(simp), file = "SIMPER Tp Ants S - A.csv")
-
-#SIMPER S - B Ants
-Ants = read.csv("Rarified Tp OTU Table 380 Ants S - B.csv", header= TRUE)
-AntsENV = read.csv("Rarified Tp Metadata 380 Ants S - B.csv", header= TRUE)
-simp = simper(Ants, AntsENV$color,permutations = 9999, trace = FALSE)
-summary(simp)
-capture.output(summary(simp), file = "SIMPER Tp Ants S - B.csv")
-
-
-
-#Ants Ts PERMANOVA - 700
-all_OTU = read.csv("Rarified Ts OTU Table Ants 700.csv", header= TRUE)
-metadata = read.csv("Rarified Ts Metadata Ants 700.csv", header= TRUE)
-perm = adonis2(all_OTU~color, metadata, permutations = 9999, method = "bray", by= "margin")
-perm
-# F=3.6296, R2 = 0.18031, df=2,33, p=0.0011
-
-
-tommy = pairwise.adonis2(all_OTU ~ color, data = metadata)
-tommy
-corrected_pvalues = p.adjust(p = c(0.087, 0.012,0.001), method="bonferroni", n = 3)
-corrected_pvalues
-
-#Fungus Ts PERMANOVA
-all_OTU = read.csv("Rarified Ts OTU Table Fungus 700.csv", header= TRUE)
-metadata = read.csv("Rarified Ts Metadata Fungus 700.csv", header= TRUE)
-perm = adonis2(all_OTU~type, metadata, permutations = 9999, method = "bray", by= "margin")
-perm
-# F=8.6522, R2 = 0.5302, df=3,23, p=1e-04
-
-
-tommy = pairwise.adonis2(all_OTU ~ type, data = metadata)
-tommy
-corrected_pvalues = p.adjust(p = c(0.017, 0.017,0.001, 0.091, 0.404, 0.005), method="bonferroni", n = 6)
-corrected_pvalues
-
-#SIMPER SA - A
-Ants = read.csv("Rarified Ts OTU Table Fungus 700 - S A.csv", header= TRUE)
-AntsENV = read.csv("Rarified Ts Metadata Fungus 700 - S A.csv", header= TRUE)
-simp = simper(Ants, AntsENV$type,permutations = 9999, trace = FALSE)
-summary(simp)
-capture.output(summary(simp), file = "SIMPER Ts Fungus SA - A.csv")
-
-#SIMPER SB - SA
-Ants = read.csv("Rarified Ts OTU Table Fungus 700 - A B.csv", header= TRUE)
-AntsENV = read.csv("Rarified Ts Metadata Fungus 700 - A B.csv", header= TRUE)
-simp = simper(Ants, AntsENV$type,permutations = 9999, trace = FALSE)
-summary(simp)
-capture.output(summary(simp), file = "SIMPER Ts Fungus SA - SB.csv")
-
-#SIMPER S - A Ants
-Ants = read.csv("Rarified Ts OTU Table Ants 700 Source and Clade-A.csv", header= TRUE)
-AntsENV = read.csv("Rarified Ts Metadata Ants 700 Source and Clade-A.csv", header= TRUE)
-simp = simper(Ants, AntsENV$color,permutations = 9999, trace = FALSE)
-summary(simp)
-capture.output(summary(simp), file = "SIMPER Ts Ants S - A.csv")
-
-#SIMPER A - B Ants
-Ants = read.csv("Rarified Ts OTU Table Ants 700 Clade-A and Clade-B.csv", header= TRUE)
-AntsENV = read.csv("Rarified Ts Metadata Ants 700 Clade-A and Clade-B.csv", header= TRUE)
-simp = simper(Ants, AntsENV$color,permutations = 9999, trace = FALSE)
-summary(simp)
-capture.output(summary(simp), file = "SIMPER Ts Ants A - B.csv")
-
-#Shannon's Calculations
-all_OTU = read.csv("Rarified Ts OTU Table 700.csv", header= TRUE)
+#Shannon's Calculations - T. septentrionalis Example
+library(vegan)
+all_OTU = read.csv("Rarified Ts OTU.csv", header= TRUE)
 shannon <- diversity(all_OTU,"shannon")
 write.csv(shannon, file = 'shannon_Ts.csv')
-all_OTU = read.csv("Rarified Tp OTU Table 380.csv", header= TRUE)
-shannon <- diversity(all_OTU,"shannon")
-write.csv(shannon, file = 'shannon_Tp.csv')
-all_OTU = read.csv("Rarified Ti OTU Table.csv", header= TRUE)
-shannon <- diversity(all_OTU,"shannon")
-write.csv(shannon, file = 'shannon_Ti.csv')
-all_OTU = read.csv("Rarified Ta OTU Table.csv", header= TRUE)
-shannon <- diversity(all_OTU,"shannon")
-write.csv(shannon, file = 'shannon_Ta.csv')
 
-#Kruskall - Ta
-FungusENV <- read.csv("shannon_Ta_ant.csv")
-kw <- kruskal.test(x~color, FungusENV)
-kw
-FungusENV <- read.csv("shannon_Ta_fungus.csv")
-kw <- kruskal.test(x~color, FungusENV)
-kw
 
-#Kruskall - Ti
-FungusENV <- read.csv("shannon_Ti.csv")
-kw <- kruskal.test(x~type, FungusENV)
-kw
 
-dunn <- dunnTest(x~type, FungusENV, method = "bonferroni")
-dunn
-
-#Kruskall - Tp Ants
-FungusENV <- read.csv("shannon_Tp_ants.csv")
-kw <- kruskal.test(x~color, FungusENV)
-kw
-
-#Kruskall - Tp Fungus
+#Kruskall-Wallis Test - T. pomonae Example
 FungusENV <- read.csv("shannon_Tp_fungus.csv")
 kw <- kruskal.test(x~type, FungusENV)
 kw
-
+#Dunn's Test
 dunn <- dunnTest(x~type, FungusENV, method = "bonferroni")
 dunn
 
-#Kruskall - Ts Ants
-FungusENV <- read.csv("shannon_Ts_ants.csv")
-kw <- kruskal.test(x~color, FungusENV)
-kw
-#Kruskall - Ts F
-FungusENV <- read.csv("shannon_Ts_fungus.csv")
-kw <- kruskal.test(x~type, FungusENV)
-kw
-dunn <- dunnTest(x~type, FungusENV, method = "bonferroni")
-dunn
-
-library(devtools)
-install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 
 #VD - TP Fungus
 yo = read.csv("TP Fungus Venn.csv", header= TRUE)
