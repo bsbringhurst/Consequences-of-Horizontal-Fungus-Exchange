@@ -1,1 +1,44 @@
+Author Information:
+	A. Principal Investigator Contact Information
+		Name: Jon N. Seal
+		Institution: Department of Biology, The University of Texas at Tyler
+		Address: Tyler, Texas, USA
+		Email: trachymyrmex@gmail.com
 
+	B. Associate or Co-investigator Contact Information
+		Name: Blake Bringhurst
+		Institution: Department of Biology, The University of Texas at Tyler
+		Address: Tyler, Texas, USA
+		Email: bbringhurst@patriots.uttyler.edu
+		
+	C. Associate or Co-investigator Contact Information
+		Name: Katrin Kellner
+		Institution: Department of Biology, The University of Texas at Tyler
+		Address: Tyler, Texas, USA
+		Email: antkatrina@gmail.com
+		
+	D. Associate or Co-investigator Contact Information
+		Name: Matthew Greenwold
+		Institution: Department of Biology, The University of Texas at Tyler
+		Address: Tyler, Texas, USA
+		Email: mgreenwold@uttyler.edu
+    
+Files Presented:
+Qiime2 Pipeline - Pipeline used to perform the Qiime2 analyses. OTU table(s) produced from this pipeline were then input into R to undergo statistical analyses.
+
+R Code - Code utilized during the analysis of the resulting OTU tables output by Qiime2. Script here was used to create/perform 
+rarifaction of the resulting OTU tables, NMDS plots, PERMANOVA tests, SIMPER tests, Shannon's Diversity Index analyses, Venn Diagrams.
+
+Raw Data Location:
+The raw metagenome sequences for each sample have been uploaded to NCBI under the BioProject PRJNA982270.
+
+Processing:
+Initial sequence cleanup was performed by removing short sequences with <150 bp, sequences with ambiguous base calls, chimeras, sequences with runs exceeding 6 bp, and singleton sequences (Dowd et al., 2008). 
+The resulting sequences were then inputted into Qiime2-2020.6, after having their barcodes and linker and reverse primers removed (Bolyen et al., 2019). 
+Sequences were then demultiplexed using the demux plugin (https://github.com/qiime2/q2-demux) and went through quality control using the dada2 plugin (Callahan et al., 2016). 
+When using the dada2 plugin, sequences were truncated down to 280 base pairs for T. arizonensis and T. pomonae or 260 base pairs for T. septentrionalis as the average quality score dipped below 20 beyond this point. 
+Taxonomy classification with 99% OTU similarity was performed utilizing the SILVA 138_QIIME database (Quast et al., 2013; Yilmaz et al., 2014). 
+To do this, we created our own taxonomic classifier using the “feature-classifier fit-classifier-naive-bayes” command and the SILVA database. 
+This classifier was used to assign sequences a taxonomic classification using the “feature-classifier” plugin (Bokulich et al., 2018) with the “classify-sklearn” command. 
+An OTU table was created by inputting a tabulated taxonomic bar plot, created using the “taxa barplot” command, of our sequences into Qiime2 View (https://view.qiime2.org).  
+OTUs that matched with chloroplast or mitochondrial sequences were manually removed from the OTU table prior to any further analyses. Additionally, any unassigned sequences were manually removed.
