@@ -7,6 +7,7 @@ otu.Tab  <- Rarefy(Ants, depth = 1000)$otu.tab.rff
 write.csv(otu.Tab,"Rarified Ta OTU Table.csv")
 
 
+
 #NMDS Plot - T. arizonensis Example
 library(vegan)
 rar_OTU = read.csv("Rarified Ta OTU Table.csv", header= TRUE)
@@ -20,6 +21,7 @@ points(ord,display="sites", col = color,bg = color, pch=shape ,cex=1.25)
 par(mar=c(5, 4, 4, 9), xpd=TRUE)
 legend("topright", inset=c(-0.47,0), legend = c("Clade-A Ants", "Clade-B Ants", "Clade-A Fungus", "Clade-B Fungus"), col = c("darkorange","cyan","red3","blue"), pt.bg = c("darkorange","cyan","red3","blue"), pch = c(24,24,24,24))
 mtext("Stress = 0.0704", side = 3.5)
+
 
 
 #Indicator Species Analysis (ISA) - T. arizonensis Example
@@ -40,6 +42,7 @@ inv = multipatt(abund, type, func = "r.g", control = how(nperm=9999))
 summary(inv)
 
 
+
 #Permutational Multivariate ANOVA (PERMANOVA) - T. arizonensis Example
 library(vegan)
 Ants = read.csv("Rarified Ta Fungus OTU Table.csv", header= TRUE)
@@ -54,6 +57,7 @@ corrected_pvalues = p.adjust(p = c(0.04,0.024,0.235), method="bonferroni", n = 3
 corrected_pvalues
 
 
+
 #Similarity Percentage (SIMPER) - T. pomonae Example
 #Import rarified datasets with only two groupings (in this case the source ants (S) and dysbiotic, Clade-A ants (A))
 Ants = read.csv("Rarified Tp OTU Table Fungus - S A.csv", header= TRUE)
@@ -61,6 +65,7 @@ AntsENV = read.csv("Rarified Tp Metadata Fungus - S A.csv", header= TRUE)
 simp = simper(Ants, AntsENV$type,permutations = 9999, trace = FALSE)
 summary(simp)
 capture.output(summary(simp), file = "SIMPER Tp Fungus SA - A.csv")
+
 
 
 #Shannon's Calculations - T. septentrionalis Example
@@ -71,46 +76,19 @@ write.csv(shannon, file = 'shannon_Ts.csv')
 
 
 
-#Kruskall-Wallis Test - T. pomonae Example
+#Kruskall-Wallis Test - T. pomonae Shannon Diversity Example
 FungusENV <- read.csv("shannon_Tp_fungus.csv")
 kw <- kruskal.test(x~type, FungusENV)
 kw
 #Dunn's Test
+library(FSA)
 dunn <- dunnTest(x~type, FungusENV, method = "bonferroni")
 dunn
 
 
-#VD - TP Fungus
-yo = read.csv("TP Fungus Venn.csv", header= TRUE)
-timmy <- venn(yo)
-plot(timmy)
 
-#VD - TP Ants
-yo = read.csv("TP Ant Venn.csv", header= TRUE)
-timmy <- venn(yo)
-plot(timmy)
-
-#VD - TA Ants
-yo = read.csv("TA Ant Venn.csv", header= TRUE)
-timmy <- venn(yo)
-plot(timmy)
-
-#VD - TA Fungus
-yo = read.csv("TA Fungus Venn.csv", header= TRUE)
-timmy <- venn(yo)
-plot(timmy)
-
-#VD - TI Fungus
-yo = read.csv("Ti Fungus Venn.csv", header= TRUE)
-timmy <- venn(yo)
-plot(timmy)
-
-#VD - TS Fungus
-yo = read.csv("Ts Fungus Venn.csv", header= TRUE)
-timmy <- venn(yo)
-plot(timmy)
-
-#VD - TS Ant
-yo = read.csv("Ts Ant Venn.csv", header= TRUE)
-timmy <- venn(yo)
-plot(timmy)
+#Venn Diagram - T. septentrionalis Ants Example
+library(eulerr)
+vd = read.csv("Ts Ant Venn.csv", header= TRUE)
+vdplotted <- venn(vd)
+plot(vdplotted)
