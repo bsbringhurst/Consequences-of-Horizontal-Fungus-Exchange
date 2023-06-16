@@ -10,18 +10,19 @@ Author Information:
 		Institution: Department of Biology, The University of Texas at Tyler
 		Address: Tyler, Texas, USA
 		Email: bbringhurst@patriots.uttyler.edu
-		
+
 	C. Associate or Co-investigator Contact Information
-		Name: Katrin Kellner
-		Institution: Department of Biology, The University of Texas at Tyler
-		Address: Tyler, Texas, USA
-		Email: antkatrina@gmail.com
-		
-	D. Associate or Co-investigator Contact Information
 		Name: Matthew Greenwold
 		Institution: Department of Biology, The University of Texas at Tyler
 		Address: Tyler, Texas, USA
 		Email: mgreenwold@uttyler.edu
+
+	D. Associate or Co-investigator Contact Information
+		Name: Katrin Kellner
+		Institution: Department of Biology, The University of Texas at Tyler
+		Address: Tyler, Texas, USA
+		Email: antkatrina@gmail.com
+	
     
 Files Presented:
 Qiime2 Pipeline - Pipeline used to perform the Qiime2 analyses. OTU table(s) produced from this pipeline were then input into R to undergo statistical analyses.
