@@ -1,1 +1,250 @@
+#Used MR DNA Fastq Processor (outputs R1, R2, and mapping file (add ReversePrimer) into qiime2 EMP format) and removed Linker, barcodes, and reverse primer for Ts and Tp data. Outputted a forward.fastq.gz,reverse.fastq.gz, and barcodes.fastq.gz 
 
+#Placed forward,reverse, and barcodes.fastq.gz into a folder (emp-paired-end-sequences)
+
+#Ts was in two file sets 1-36 and 37-70. Tp was in two file sets 1-33 and 34-66. Files are kept separate and eventually merged in Qiime2. First, import the data.
+qiime tools import \
+  --type EMPPairedEndSequences \
+  --input-path emp-paired-end-sequences \
+  --output-path emp-paired-end-sequences.qza
+
+#demultiplex data, added no-golay option since barcodes are 8nt(do not need option if 12nt barcodes)
+qiime demux emp-paired \
+  --m-barcodes-file sample-metadata.tsv \
+  --m-barcodes-column BarcodeSequence \
+  --i-seqs emp-paired-end-sequences.qza \
+--p-no-golay-error-correction \
+  --o-per-sample-sequences demux.qza \
+  --o-error-correction-details demux-details.qza
+
+qiime demux summarize \
+  --i-data demux.qza \
+  --o-visualization demux.qzv
+
+
+#Entering Ta data using Casava method
+qiime tools import \
+  --type 'SampleData[PairedEndSequencesWithQuality]' \
+  --input-path demux\
+  --input-format CasavaOneEightSingleLanePerSampleDirFmt \
+  --output-path demux-paired-end-Ta.qza
+
+qiime tools import \
+  --type 'SampleData[PairedEndSequencesWithQuality]' \
+  --input-path demux\
+  --input-format CasavaOneEightSingleLanePerSampleDirFmt \
+  --output-path demux-paired-end-Ta.qza
+
+
+#denoise Ta, and Tp data, used dada2 first (look at demux.qzv to decide trunc value based on Q20 value (280 nt)) 
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux-paired-end-Ta.qza \
+  --p-trim-left-f 0 \
+  --p-trim-left-r 0 \
+  --p-trunc-len-f 280 \
+  --p-trunc-len-r 280 \
+  --o-table 280_table-Ta.qza \
+  --o-representative-sequences 280_rep-seqs-Ta.qza \
+  --o-denoising-stats 280_denoising-stats-Ta.qza
+
+
+qiime feature-table summarize \
+  --i-table 280_table-Ta.qza \
+  --o-visualization 280_table-Ta.qzv \
+  --m-sample-metadata-file sample-metadata-Ta.tsv
+
+
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux-Tp-1-33.qza \
+  --p-trim-left-f 0 \
+  --p-trim-left-r 0 \
+  --p-trunc-len-f 280 \
+  --p-trunc-len-r 280 \
+  --o-table 280_table-Tp-1-33.qza \
+  --o-representative-sequences 280_rep-seqs-Tp-1-33.qza \
+  --o-denoising-stats 280_denoising-stats-Tp-1-33.qza
+
+qiime feature-table summarize \
+  --i-table 280_table-Tp-1-33.qza \
+  --o-visualization 280_table-Tp-1-33.qzv \
+  --m-sample-metadata-file sample-metadata-Tp.tsv
+
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux-Tp-34-66.qza \
+  --p-trim-left-f 0 \
+  --p-trim-left-r 0 \
+  --p-trunc-len-f 280 \
+  --p-trunc-len-r 280 \
+  --o-table 280_table-Tp-34-66.qza \
+  --o-representative-sequences 280_rep-seqs-Tp-34-66.qza \
+  --o-denoising-stats 280_denoising-stats-Tp-34-66.qza
+
+qiime feature-table summarize \
+  --i-table 280_table-Tp-34-66.qza \
+  --o-visualization 280_table-Tp-34-66.qzv \
+  --m-sample-metadata-file sample-metadata-Tp.tsv
+
+
+#denoise Ts data, used dada2 first (look at demux.qzv to decide trunc value based on Q20 value) (apply to both)
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left-f 0 \
+  --p-trim-left-r 0 \
+  --p-trunc-len-f 260 \
+  --p-trunc-len-r 260 \
+  --o-table table.qza \
+  --o-representative-sequences rep-seqs.qza \
+  --o-denoising-stats denoising-stats.qza
+
+
+qiime metadata tabulate \
+  --m-input-file denoising-stats.qza \
+  --o-visualization denoising-stats.qzv
+
+qiime feature-table summarize \
+  --i-table table.qza \
+  --o-visualization table.qzv \
+  --m-sample-metadata-file sample-metadata.tsv
+
+
+#Filter Tp 34-66
+qiime feature-table filter-samples \
+--i-table 280_table-Tp-1-33.qza \
+--m-metadata-file sample-metadata-Tp.tsv \
+--p-where "[Type] = '1-33'" \
+--o-filtered-table 280_filtered-table-Tp-1-33.qza
+
+qiime feature-table filter-seqs  \
+--i-data 280_rep-seqs-Tp-1-33.qza \
+--i-table 280_filtered-table-Tp-1-33.qza \
+--o-filtered-data 280_filtered-rep-seqs-Tp-1-33.qza
+
+qiime feature-table summarize \
+  --i-table 280_filtered-table-Tp-1-33.qza \
+  --o-visualization 280_filtered-table-Tp-1-33.qzv 
+
+qiime feature-table tabulate-seqs \
+  --i-data 280_filtered-rep-seqs-Tp-1-33.qza \
+  --o-visualization 280_filtered-rep-seqs-Tp-1-33.qzv
+
+#Filter Tp 1-33
+qiime feature-table filter-samples \
+--i-table 280_table-Tp-34-66.qza \
+--m-metadata-file sample-metadata-Tp.tsv \
+--p-where "[Type] = '34-66'" \
+--o-filtered-table 280_filtered-table-Tp-34-66.qza
+
+qiime feature-table filter-seqs  \
+--i-data 280_rep-seqs-Tp-34-66.qza \
+--i-table 280_filtered-table-Tp-34-66.qza \
+--o-filtered-data 280_filtered-rep-seqs-Tp-34-66.qza
+
+qiime feature-table summarize \
+  --i-table 280_filtered-table-Tp-34-66.qza \
+  --o-visualization 280_filtered-table-Tp-34-66.qzv 
+
+qiime feature-table tabulate-seqs \
+  --i-data 280_filtered-rep-seqs-Tp-34-66.qza \
+  --o-visualization 280_filtered-rep-seqs-Tp-34-66.qzv
+
+#Combine all Tp data
+qiime feature-table merge \
+ --i-tables 280_filtered-table-Tp-1-33.qza \
+ --i-tables 280_filtered-table-Tp-34-66.qza \
+ --o-merged-table table-Tp.qza
+
+qiime feature-table merge-seqs \
+ --i-data 280_filtered-rep-seqs-Tp-1-33.qza \
+ --i-data 280_filtered-rep-seqs-Tp-34-66.qza \
+ --o-merged-data rep-seqs-Tp.qza
+
+qiime feature-table summarize \
+  --i-table table-Tp.qza \
+  --o-visualization table-Tp.qzv \
+
+#Filter Ts 37-70
+qiime feature-table filter-samples \
+--i-table table.qza \
+--m-metadata-file sample-metadata.tsv \
+--p-where "[Type] = '1-36'" \
+--o-filtered-table table-1-36.qza
+
+qiime feature-table filter-seqs  \
+--i-data rep-seqs.qza \
+--i-table table-1-36.qza \
+--o-filtered-data rep-seqs1-36.qza
+
+qiime feature-table summarize \
+  --i-table table-1-36.qza \
+  --o-visualization table-1-36.qzv \
+
+qiime feature-table tabulate-seqs \
+  --i-data rep-seqs1-36.qza \
+  --o-visualization rep-seqs1-36.qzv
+
+#Filter Ts 1-36
+qiime feature-table filter-samples \
+--i-table table.qza \
+--m-metadata-file sample-metadata.tsv \
+--p-where "[Type] = '37-70'" \
+--o-filtered-table table-37-70.qza
+
+qiime feature-table filter-seqs  \
+--i-data rep-seqs.qza \
+--i-table table-37-70.qza \
+--o-filtered-data rep-seqs37-70.qza
+
+qiime feature-table summarize \
+  --i-table table-37-70.qza \
+  --o-visualization table-37-70.qzv \
+
+qiime feature-table tabulate-seqs \
+  --i-data rep-seqs37-70.qza \
+  --o-visualization rep-seqs37-70.qzv
+
+#Combine all Ts data
+qiime feature-table merge \
+ --i-tables table-37-70.qza \
+ --i-tables table-1-36.qza \
+ --o-merged-table table-Ts.qza
+
+qiime feature-table merge-seqs \
+ --i-data rep-seqs37-70.qza \
+ --i-data rep-seqs1-36.qza \
+ --o-merged-data rep-seqs-Ts.qza
+
+qiime feature-table summarize \
+  --i-table table-Ts.qza \
+  --o-visualization table-Ts.qzv \
+
+
+
+
+
+
+#Silva 138
+qiime feature-classifier extract-reads \
+  --i-sequences silva-138-99-seqs.qza \
+  --p-f-primer AGRGTTTGATCMTGGCTCAG \
+  --p-r-primer GTNTTACNGCGGCKGCTG \
+  --o-reads 138_remove_trunc_ref-seqs.qza
+
+qiime feature-classifier fit-classifier-naive-bayes \
+  --i-reference-reads 138_remove_trunc_ref-seqs.qza \
+  --i-reference-taxonomy silva-138-99-tax.qza \
+  --o-classifier 138_trunc_classifier_all.qza
+
+qiime feature-classifier classify-sklearn \
+  --i-classifier 138_trunc_classifier_all.qza \
+  --i-reads 280_rep-seqs-Ta.qza \
+  --o-classification 138_280_sklearn_taxonomy-Ta.qza
+
+qiime metadata tabulate \
+  --m-input-file 138_280_sklearn_taxonomy-Ta.qza \
+  --o-visualization 138_280_sklearn_taxonomy-Ta.qzv
+
+qiime taxa barplot \
+  --i-table 280_table-Ta.qza \
+  --i-taxonomy 138_280_sklearn_taxonomy-Ta.qza \
+  --m-metadata-file sample-metadata-Ta.tsv \
+  --o-visualization 138_280_sklearn_taxa-bar-plots-Ta.qzv
